@@ -5,55 +5,66 @@ class CircularQueue:
 
     def __init__(self, k: int):
         """Initialize queue with k as the size"""
-        self.queue = []
-        self.size = k
+        self.queue = [None] * k
+        self.size = 0
+        self.head = 0
+        self.tail = -1 
 
 
     def enQueue(self, value):
         """Insert element into circular queue, return true if successfull"""
         
-        if not self.isFull():
-            self.queue.append(value)
-            return True
-
-        else:
+        if self.isFull():
             return False
 
+        else:
+            # ensures tail never exceeds length of queue
+            self.tail = (self.tail + 1) % len(self.queue)
+            self.queue[self.tail] = value
+            self.size += 1
+
+            return True
+        
 
     def deQueue(self):
         """Remove element from circular queue, return true if successfull"""
 
-        if not self.isEmpty():
-            self.queue.pop(0)
-            return True
+        if self.isEmpty():
+            return False
 
         else:
-            return False
+            self.queue[self.head] = None
+            # shift front to the next element / ensure head never exceeds length
+            self.head = (self.head + 1) % len(self.queue)
+            self.size -= 1
+
+            return True
 
 
     def front(self):
         """Return first element in queue"""
 
-        if not self.isEmpty():
-            return self.queue[0]
-        else:
+        if self.isEmpty():
             return -1
+        
+        else:
+            return self.queue[self.head]
 
 
     def back(self):
         """Return last element in queue"""
 
-        if not self.isEmpty():
-            return self.queue[-1]
+        if self.isEmpty():
+            return -1
         
         else:
-            return -1
+            return self.queue[self.tail]
 
 
     def isEmpty(self):
         """Return true if circular queue is empty"""
 
-        return len(self.queue) == 0
+        return self.size == 0
 
 
     def isFull(self):
@@ -67,7 +78,7 @@ class Test(unittest.TestCase):
     def test_initialize_circular_queue(self):
         """Test initialize CircularQueue is successfull"""
         c_queue = CircularQueue(3)
-        self.assertEqual(c_queue.size, 3)
+        self.assertEqual(len(c_queue.queue), 3)
     
 
     def test_enQueue(self):
